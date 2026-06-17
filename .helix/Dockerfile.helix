@@ -1,0 +1,17 @@
+FROM docker.io/node:20-bookworm
+
+WORKDIR /app
+
+# Copy workspace manifests
+COPY package.json package-lock.json ./
+COPY core/package.json ./core/
+
+# Install ALL workspace dependencies (npm ci must be run from root)
+RUN npm ci --ignore-scripts
+
+# Copy source code
+COPY core/ ./core/
+
+# Test command — runs jest from core workspace
+WORKDIR /app/core
+CMD ["npx", "jest"]
