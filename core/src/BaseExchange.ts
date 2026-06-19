@@ -201,6 +201,9 @@ export interface ExchangeCredentials {
     apiSecret?: string;
     passphrase?: string;
 
+    // Token-based authentication (Metaculus, etc.)
+    apiToken?: string;
+
     // Blockchain-based authentication (Polymarket)
     privateKey?: string;  // Required for Polymarket L1 auth
 

@@ -1144,6 +1144,7 @@ components:
           - baozi
           - myriad
           - opinion
+          - metaculus
       required: true
       description: The prediction market exchange to target.
   schemas:
