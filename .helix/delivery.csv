@@ -1,0 +1,17 @@
+repo_url,repo,instance_id,base_commit,test_commit,pass_to_pass,fail_to_pass,problem_statement,problem_statement_variant,golden_commit
+https://github.com/pmxt-dev/pmxt,pmxt-dev__pmxt__71,pmxt-dev__pmxt__71,4c2a979196a91fd8616fae0b2a118a02e4a6e125,6a605bad78f2d065209bffdabf91ee0ab375d6a6,"core/test/unit/fetchMarketAndEvent.test.ts, core/test/utils/market-utils.test.ts, core/test/unit/server-api.test.ts","core/test/unit/metaculus.test.ts, core/test/unit/metaculus-server.test.ts","Add a read-only Metaculus prediction market exchange to pmxt. Currently, pmxt supports Kalshi, Polymarket, Limitless, Probable, Baozi, Myriad, and Opinion exchanges, but has no integration with Metaculus (https://www.metaculus.com).
+
+Read core/ADDING_AN_EXCHANGE.md first — it describes the standard pattern. The Kalshi exchange (core/src/exchanges/kalshi/) is the simplest reference implementation.
+
+The task is to add a new read-only MetaculusExchange that:
+1. Fetches binary prediction questions as markets with Yes/No outcomes using their community prediction probability
+2. Fetches groups-of-questions as events where each sub-question becomes a separate market
+3. Supports optional API token authentication via `Authorization: Token <token>` header
+4. Registers the exchange in both the public API exports (core/src/index.ts) and the sidecar server (core/src/server/app.ts) so that /api/metaculus/fetchMarkets and /api/metaculus/fetchEvents work
+
+API reference:
+- GET https://www.metaculus.com/api/posts/ returns paginated {count, next, results}
+- Binary questions: post.question.type === 'binary', community prediction at post.question.community_prediction.full.yes (0-1)
+- Group-of-questions: post.group_of_questions.sub_questions[] — each sub-question becomes a market
+- Auth: Authorization: Token <apiToken> header
+- Read-only: no trading, websocket, orderbook, or OHLCV needed","Integrate Metaculus as a read-only prediction market exchange following existing exchange patterns. The implementation must include: a MetaculusExchange class extending PredictionMarketExchange, fetchMarkets returning UnifiedMarket[] from binary questions, fetchEvents returning UnifiedEvent[] from group-of-questions, Token-based auth via MetaculusAuth, and server registration in app.ts.",4c4bf8fab9a82137c76d726746c142e95cc8c9e2
