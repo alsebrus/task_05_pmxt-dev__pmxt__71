@@ -1,0 +1,31 @@
+[
+  {
+    "instance_id": "pmxt-dev__pmxt__71",
+    "task_title": "Add read-only Metaculus prediction market exchange to pmxt",
+    "problem_statement": "Add a read-only Metaculus prediction market exchange to pmxt. Currently, pmxt supports Kalshi, Polymarket, Limitless, Probable, Baozi, Myriad, and Opinion exchanges, but has no integration with Metaculus (https://www.metaculus.com).\n\nRead core/ADDING_AN_EXCHANGE.md first — it describes the standard pattern. The Kalshi exchange (core/src/exchanges/kalshi/) is the simplest reference implementation.\n\nThe task is to add a new read-only MetaculusExchange that:\n1. Fetches binary prediction questions as markets with Yes/No outcomes using their community prediction probability\n2. Fetches groups-of-questions as events where each sub-question becomes a separate market\n3. Supports optional API token authentication via `Authorization: Token <token>` header\n4. Registers the exchange in both the public API exports (core/src/index.ts) and the sidecar server (core/src/server/app.ts) so that /api/metaculus/fetchMarkets and /api/metaculus/fetchEvents work\n\nAPI reference:\n- GET https://www.metaculus.com/api/posts/ returns paginated {count, next, results}\n- Binary questions: post.question.type === 'binary', community prediction at post.question.community_prediction.full.yes (0-1)\n- Group-of-questions: post.group_of_questions.sub_questions[] — each sub-question becomes a market\n- Auth: Authorization: Token <apiToken> header\n- Read-only: no trading, websocket, orderbook, or OHLCV needed",
+    "problem_statement_variant": "Integrate Metaculus as a read-only prediction market exchange following existing exchange patterns. The implementation must include: a MetaculusExchange class extending PredictionMarketExchange, fetchMarkets returning UnifiedMarket[] from binary questions, fetchEvents returning UnifiedEvent[] from group-of-questions, Token-based auth via MetaculusAuth, and server registration in app.ts.",
+    "hints": [
+      "Follow the Kalshi exchange pattern (simplest reference implementation) in core/src/exchanges/kalshi/",
+      "Create core/src/exchanges/metaculus/ with: utils.ts (BASE_URL, toMillis, parseNum), auth.ts (MetaculusAuth with Token header), errors.ts (MetaculusErrorMapper), fetcher.ts (raw API data fetching), normalizer.ts (raw→unified mapping), index.ts (MetaculusExchange class)",
+      "Metaculus API: GET https://www.metaculus.com/api/posts/ returns paginated {count, next, results}. Each result has question (binary) or group_of_questions (with sub_questions)",
+      "Binary questions have community_prediction.full.yes (0-1 probability)",
+      "Register in core/src/index.ts (export + pmxt dict + short alias) and core/src/server/app.ts (defaultExchanges dict + createExchange case)",
+      "Add apiToken to ExchangeCredentials in BaseExchange.ts",
+      "No trading, websocket, orderbook, or OHLCV needed — read-only"
+    ],
+    "repo": "pmxt-dev__pmxt__71",
+    "repo_path_or_url": "https://github.com/pmxt-dev/pmxt",
+    "FAIL_TO_PASS": "core/test/unit/metaculus.test.ts, core/test/unit/metaculus-server.test.ts",
+    "PASS_TO_PASS": "core/test/unit/fetchMarketAndEvent.test.ts, core/test/utils/market-utils.test.ts, core/test/unit/server-api.test.ts",
+    "language": "typescript",
+    "docker_file": ".helix/Dockerfile.helix",
+    "run_script": ".helix/run-tests-eval.sh",
+    "task_type": "general",
+    "task_category": "feature",
+    "repo_category": "library",
+    "version": "1.0.0",
+    "container_mem": "2048",
+    "container_memswap": "4096",
+    "container_network_needed": false
+  }
+]
